@@ -1,19 +1,3 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 
 
 # CineStream — Development Journal & AI-Assisted Learning Log
@@ -122,3 +106,31 @@ Two separate CSS conflicts came up while restyling the app:
 | Deployment | Vercel |
 
 --
+
+
+---
+
+## Fullstack Integration Update
+
+This frontend was subsequently integrated with a separate Sprint 10 backend, `mongo-blog-api` (Express + Mongoose + MongoDB Atlas), as part of a fullstack system-integration assignment.
+
+### What Was Added
+
+- **`PostList.jsx`** — a new component fetching, creating, and deleting blog posts against the live backend, built independently of the existing movie-browsing feature (which remains untouched at `/`)
+- **Full CRUD pipeline**: GET (fetch + render), POST (create via controlled form), DELETE (remove + optimistic UI update)
+- **Loading and error states**: distinct `isLoading`/`error` state, verified against a real simulated backend outage
+- **Automated tests**: Vitest + React Testing Library suite (`PostList.test.jsx`) covering loading, successful fetch, and error states, with coverage reporting via `@vitest/coverage-v8`
+- **Production deployment fixes**:
+  - Switched from `BrowserRouter` to `HashRouter` to fix direct-navigation/refresh routing on Vercel's static hosting
+  - Added missing `VITE_TMDB_API_KEY` / `VITE_GROQ_API_KEY` environment variables directly in Vercel's project settings (previously only present in a local, gitignored `.env` file)
+
+### New Scripts
+
+| Command | Purpose |
+|---|---|
+| `npm test` | Run the Vitest test suite |
+| `npm run test:coverage` | Run tests with a coverage report |
+
+### Live Backend
+
+This frontend now connects to `mongo-blog-api`, deployed on Render: `https://mongo-blog-api.onrender.com`
