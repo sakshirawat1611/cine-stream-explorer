@@ -85,3 +85,43 @@ This mirrors how a strict mentor would operate: guide the thinking, check the ou
 - API chaining design: using an LLM only for the parts it's good at (natural language), and a trusted source (TMDB) for factual data
 - The difference between project-level and team-level configuration on deployment platforms like Vercel
 - Git fundamentals: `git init`, `git remote`, `git push -u`, and recovering from a deleted repo
+
+
+
+
+---
+
+## Phase Update: Fullstack Integration (mongo-blog-api ↔ cine-stream-explorer)
+
+A follow-up assignment required integrating this frontend with a separately-built Sprint 10 backend (`mongo-blog-api` — Express + MongoDB Atlas). I continued the same mentor-guided approach: concepts explained first, implementation written by me, code reviewed rather than rewritten.
+
+### Example Prompts Used
+
+> "My React app can't fetch from my Express backend — the browser blocks it. Explain what's actually happening before telling me the fix."
+
+> "I wrote this useEffect and it throws `Cannot read properties of undefined (reading 'filter')`. Don't fix it — explain what shape the data actually is versus what my code assumes."
+
+> "My new function landed inside my previous function by accident. Explain how to tell from the braces, don't just paste the corrected version."
+
+> "My site works locally but shows a blank screen on Vercel with a 401 error. Explain conceptually why an API key that works locally could fail only in production."
+
+### Real Hardships Faced
+
+- **Data-shape mismatches reused from CineStream**: initially tried reusing CineStream's movie-shaped fetch logic for blog-post data (`data.results.filter(...)` when the backend actually returned a plain array). Had to trace `Cannot read properties of undefined` errors back to a wrong assumption about response shape, twice, before building a dedicated `PostList` component matched to the actual `Post` schema.
+- **Repeated function-nesting mistakes**: twice placed a new function (`handleAddPost`, then `handleDeletePost`) inside the *previous* function's closing brace instead of after it, causing scope errors. Learned to verify placement by brace-matching rather than assuming.
+- **Git push rejected (`fetch first`)**: GitHub had commits (README/Prompts.md edits) made outside my local clone. Learned `git pull origin main` merges remote history before a rejected push can succeed, and practiced resolving a Vim merge-commit prompt for the first time.
+- **Vitest test suite built from zero**: this project had no automated tests before this integration phase. Set up Vitest + React Testing Library + jsdom, and wrote tests mocking `fetch` with `vi.fn()` to verify loading, success, and error states without hitting a live server.
+- **Deployment routing failure (React Router + Vercel)**: `/posts` worked when navigated to via a link, but returned a real 404 from Vercel's server on direct URL entry or refresh. Understood this as a static-hosting limitation — the server has no real file at `/posts`, since routing is handled entirely client-side. Fixed by switching from `BrowserRouter` to `HashRouter`, so routing state never leaves the browser.
+- **Deployed app crashing site-wide from an unrelated 401**: adding blog-post fetching didn't fix a pre-existing issue — my movie-fetching `useEffect` (unrelated to this feature) was failing with a 401 in production because Vercel had never been given the TMDB/Groq environment variables from my local `.env`. Since that `useEffect` runs regardless of route, its crash broke every page, including the new Posts page. Learned that a local `.env` file is never automatically available to a deployment platform — variables must be re-entered in the platform's own settings.
+- **Two separate Vercel projects for the same repo**: discovered mid-debugging that an old and a new Vercel project were both connected to the same GitHub repo, producing two different live URLs with different deployment states. Learned to verify which project/domain was actually "Production • Current" rather than assuming the first URL found was authoritative.
+
+### Key Concepts Learned This Way
+
+- CORS: same-origin policy, and why it applies to script-initiated requests but not direct navigation
+- Express middleware ordering (`cors()` and route placement relative to a catch-all 404 handler)
+- Controlled form inputs and `POST`/`DELETE` fetch requests with JSON bodies
+- Optimistic-vs-refetch state updates (`setPosts` via `.filter()` instead of re-fetching after delete)
+- Writing and mocking async tests with Vitest + React Testing Library
+- `BrowserRouter` vs `HashRouter` and why static hosts need one or the other configured correctly
+- Environment variable scope: local `.env` files vs. platform-level (Vercel) environment configuration
+- Git merge conflicts from divergent remote/local history, and basic Vim navigation for merge commits
