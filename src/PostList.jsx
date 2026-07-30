@@ -6,9 +6,10 @@ function PostList() {
   const [error, setError] = useState(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const API_URL = 'https://mongo-blog-api.onrender.com';
 
   useEffect(() => {
-    const url = `http://localhost:5000/posts`;
+    const url = `${API_URL}/posts`;
     fetch(url)
       .then((response) => {
         if (!response.ok) {
@@ -28,7 +29,7 @@ function PostList() {
 
 function handleAddPost() {
     const newPost = { title, content };
-    fetch('http://localhost:5000/posts', {
+    fetch(`${API_URL}/posts`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -52,7 +53,7 @@ function handleAddPost() {
 }
 
 function handleDeletePost(postId) {
-  fetch(`http://localhost:5000/posts/${postId}`, {
+  fetch(`${API_URL}/posts/${postId}`, {
     method: 'DELETE',
   })
     .then((response) => {
@@ -90,7 +91,7 @@ function handleDeletePost(postId) {
 
       {isLoading && <p>Loading posts...</p>}
       {error && <p>Error: {error}</p>}
-      {!isLoading && !error && (
+      {!isLoading && (
         <ul>
             {posts.map((post) => (
                 <li key={post._id}>
