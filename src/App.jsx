@@ -5,6 +5,7 @@ import { Heart, Star } from 'lucide-react';
 import { Routes, Route, Link } from 'react-router-dom';
 import Favorites from './Favorites';
 import SkeletonCard from './SkeletonCard';
+import PostList from './PostList';
 
 function App(){
   
@@ -147,6 +148,7 @@ return (
               placeholder="Start typing to explore..."
               className="main-search"
               />
+
               <button onClick={searchMovies}>Search</button>
             </div>
           </div>
@@ -210,6 +212,7 @@ return (
           </>
         }
       />
+      <Route path="/posts" element={<PostList />} />
       <Route path="/favorites" element={<Favorites favorites={favorites} />} />
     </Routes>
   </div>
